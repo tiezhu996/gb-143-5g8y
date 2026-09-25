@@ -57,6 +57,27 @@ export const batchServiceRecordsSchema = Joi.object({
   records: Joi.array().items(serviceRecordSchema).min(1).required(),
 });
 
+export const partnerBatchItemSchema = Joi.object({
+  org_record_no: Joi.string().trim().min(1).max(64).required(),
+  volunteer_id: Joi.string().uuid().required(),
+  service_type: Joi.string().valid(
+    'elderly_care', 'child_care', 'medical_assist', 'education',
+    'community_service', 'disaster_relief', 'environmental',
+    'cultural_activity', 'other'
+  ).required(),
+  duration_hours: Joi.number().positive().max(9999).required(),
+  rating: Joi.number().integer().min(1).max(5).default(5),
+  is_no_show: Joi.boolean().default(false),
+  location: Joi.string().max(200).optional(),
+  description: Joi.string().max(2000).optional(),
+});
+
+export const partnerBatchUploadSchema = Joi.object({
+  batch_no: Joi.string().trim().min(1).max(64).required(),
+  partner_id: Joi.string().trim().min(1).max(100).required(),
+  records: Joi.array().items(partnerBatchItemSchema).min(1).required(),
+});
+
 export const volunteerCreateSchema = Joi.object({
   name: Joi.string().min(2).max(100).required(),
   phone: Joi.string().pattern(/^1[3-9]\d{9}$/).optional(),

@@ -6,6 +6,7 @@ import {
   getAdminAuditLogs,
   setVolunteerStatus,
 } from '../services/adminService';
+import { getBatchByNo, listBatches } from '../services/partnerBatchService';
 import { AuthRequest, requireAdmin } from '../middleware/auth';
 import { messages } from '../constants/messages';
 import { sendBadRequest, sendInternalError } from '../utils/httpResponses';
@@ -13,6 +14,29 @@ import { sendBadRequest, sendInternalError } from '../utils/httpResponses';
 const router = Router();
 
 router.use(requireAdmin);
+
+// 管理员按批次号查看新增、已接收（重复）和冲突结果
+router.get('/service-batches/:batchNo', async (req: AuthRequest, res: Response) => {
+  try {
+    const result = await getBatchByNo(req.params.batchNo);
+    const statusCode = result.success ? 200 : 404;
+    res.status(statusCode).json(result);
+  } catch (error) {
+    sendInternalError(res, error, 'Error getting service batch');
+  }
+});
+
+router.get('/service-batches', validateQuery(paginationSchema), async (req: AuthRequest, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const pageSize = parseInt(req.query.page_size as string) || 20;
+    const status = req.query.status as string | undefined;
+    const result = await listBatches(page, pageSize, status);
+    res.status(200).json(result);
+  } catch (error) {
+    sendInternalError(res, error, 'Error listing service batches');
+  }
+});
 
 router.post('/adjust-points', validateRequest(adjustPointsSchema), async (req: AuthRequest, res: Response) => {
   try {

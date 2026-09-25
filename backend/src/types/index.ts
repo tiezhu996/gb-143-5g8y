@@ -55,6 +55,83 @@ export interface ServiceRecord {
   recorded_at?: Date;
   created_at?: Date;
   updated_at?: Date;
+  batch_no?: string;
+  org_record_no?: string;
+}
+
+export type BatchResultStatus = 'accepted' | 'duplicate' | 'conflict';
+
+export interface PartnerBatchItemInput {
+  org_record_no: string;
+  volunteer_id: string;
+  service_type: string;
+  duration_hours: number;
+  rating: number;
+  is_no_show?: boolean;
+  location?: string;
+  description?: string;
+}
+
+export interface PartnerBatchUploadInput {
+  batch_no: string;
+  partner_id: string;
+  records: PartnerBatchItemInput[];
+}
+
+export interface BatchConflictItem {
+  org_record_no: string;
+  conflict_field: string;
+  conflict_field_label?: string;
+  existing_value: string | null;
+  received_value: string | null;
+}
+
+export interface PartnerBatchUploadResult {
+  status: BatchResultStatus;
+  batch_no: string;
+  total: number;
+  accepted_count: number;
+  duplicate_count: number;
+  conflict_count: number;
+  conflicts?: BatchConflictItem[];
+}
+
+export interface ServiceBatch {
+  batch_no: string;
+  partner_id: string;
+  status: BatchResultStatus;
+  item_count: number;
+  accepted_count: number;
+  duplicate_count: number;
+  conflict_count: number;
+  content_hash: string;
+  conflict_items: BatchConflictItem[] | null;
+  request_count: number;
+  attempt_no: number;
+  first_received_at: Date;
+  last_received_at: Date;
+  created_at: Date;
+}
+
+export interface ServiceBatchItem {
+  id: string;
+  batch_no: string;
+  attempt_no: number;
+  org_record_no: string;
+  partner_id: string;
+  volunteer_id: string | null;
+  service_type: string;
+  duration_hours: string;
+  rating: number;
+  is_no_show: boolean;
+  location: string | null;
+  description: string | null;
+  result_status: BatchResultStatus;
+  service_record_id: string | null;
+  conflict_field: string | null;
+  existing_value: string | null;
+  received_value: string | null;
+  created_at: Date;
 }
 
 export interface Volunteer {

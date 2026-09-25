@@ -43,6 +43,15 @@ export const messages = {
     serviceRecordDeleted: '记录已删除',
     serviceRecordDeleteFailed: '删除记录失败',
   },
+  batches: {
+    duplicateInBatch: '批次内存在重复的机构记录号',
+    volunteerNotFound: (orgRecordNo: string) => `条目 ${orgRecordNo} 对应的志愿者不存在`,
+    creditLimited: (orgRecordNo: string) => `条目 ${orgRecordNo} 的志愿者信用分过低，无法接单`,
+    conflictRejected: '本批与既有记录冲突，已整批拒绝，未写入任何数据',
+    batchNotFound: '批次不存在',
+    uploadFailed: '处理机构批量来件失败',
+    queryFailed: '查询批次失败',
+  },
   complaints: {
     notFound: '投诉不存在',
     alreadyHandled: '该投诉已处理',
@@ -58,10 +67,11 @@ export const messages = {
   },
   logs: {
     createServiceRecordFailed: '创建服务记录失败',
-    deleteServiceRecordFailed: '删除服务记录失败',
+    deleteServiceRecordFailed: '删除记录失败',
     handleComplaintFailed: '处理投诉失败',
     adjustPointsFailed: '调整积分失败',
     adjustCreditFailed: '调整信用分失败',
     setVolunteerStatusFailed: '设置志愿者状态失败',
+    partnerBatchUploadFailed: '处理机构批量来件失败',
   },
 };

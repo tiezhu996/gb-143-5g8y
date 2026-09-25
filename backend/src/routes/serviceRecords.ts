@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { validateRequest, validateQuery, serviceRecordSchema, batchServiceRecordsSchema, paginationSchema } from '../middleware/validator';
+import { validateRequest, validateQuery, serviceRecordSchema, batchServiceRecordsSchema, partnerBatchUploadSchema, paginationSchema } from '../middleware/validator';
 import { AuthRequest } from '../middleware/auth';
 import {
   createServiceRecord,
@@ -8,6 +8,7 @@ import {
   getServiceRecordById,
   deleteServiceRecord,
 } from '../services/volunteerService';
+import { uploadPartnerBatch } from '../services/partnerBatchService';
 import { sendInternalError } from '../utils/httpResponses';
 
 const router = Router();
@@ -28,6 +29,21 @@ router.post('/batch', validateRequest(batchServiceRecordsSchema), async (req: Re
     res.status(200).json(result);
   } catch (error) {
     sendInternalError(res, error, 'Error batch creating service records');
+  }
+});
+
+// 合作机构按批次号 + 机构记录号幂等上传：内容相同回已接收，同号改动整批拒绝
+router.post('/partner-batches', validateRequest(partnerBatchUploadSchema), async (req: Request, res: Response) => {
+  try {
+    const result = await uploadPartnerBatch(req.body);
+    if (!result.success) {
+      res.status(400).json(result);
+      return;
+    }
+    const statusCode = result.data?.status === 'accepted' ? 201 : result.data?.status === 'conflict' ? 409 : 200;
+    res.status(statusCode).json(result);
+  } catch (error) {
+    sendInternalError(res, error, 'Error uploading partner service batch');
   }
 });
 
