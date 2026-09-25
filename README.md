@@ -26,6 +26,20 @@ docker compose down -v --remove-orphans
 - 志愿者档案与服务记录
 - 积分、徽章和信用分计算
 - 投诉处理、后台调整和排行榜
+- 合作机构批次上传（幂等）：按批次号+机构记录号认件，重复提交不重复入账，内容冲突整批拒绝，管理员可按批次号查看新增/已接收/冲突结果
+
+### 机构批次上传
+
+```
+POST /api/v1/partner-batches          机构提交批次（batch_no + records[].external_record_no）
+GET  /api/v1/admin/partner-batches    管理员查看批次列表
+GET  /api/v1/admin/partner-batches/:batchNo   按批次号查看新增、已接收和冲突明细
+```
+
+- 同一 `batch_no` 重试且内容一致：回复"已接收"，积分与流水不变
+- 同一机构记录号改了时长、类型或评分：整批拒绝（HTTP 409），返回冲突条目及差异字段，既有数据保持可查
+- 批内含无效条目或重复机构记录号：整批拒绝，一条不写
+- 并发提交同一批次：仅一路入账，其余回复已接收
 
 ## 本地开发
 

@@ -50,6 +50,19 @@ export const messages = {
     resolved: '投诉已处理',
     handleFailed: '处理投诉失败',
   },
+  partnerBatches: {
+    notFound: '批次不存在',
+    duplicateRecordNos: '批次内存在重复的机构记录号',
+    invalidRecords: '批次包含无效条目，已整批拒绝',
+    conflict: '批次内容冲突，本次提交已拒绝',
+    alreadyReceived: '批次已接收，内容一致，未重复入账',
+    processed: '批次已接收并入账',
+    submitFailed: '批次提交失败',
+    unknownRecordNo: '批次中不存在该机构记录号',
+    contentChanged: '机构记录号相同但内容不一致',
+    volunteerNotFound: '志愿者不存在',
+    creditLimited: '志愿者信用分过低，无法接单',
+  },
   admin: {
     adjustPointsFailed: '调整积分失败',
     adjustCreditFailed: '调整信用分失败',
@@ -63,5 +76,6 @@ export const messages = {
     adjustPointsFailed: '调整积分失败',
     adjustCreditFailed: '调整信用分失败',
     setVolunteerStatusFailed: '设置志愿者状态失败',
+    submitPartnerBatchFailed: '机构批次提交失败',
   },
 };

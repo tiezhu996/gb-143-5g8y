@@ -5,6 +5,7 @@ import serviceRecordRoutes from './routes/serviceRecords';
 import rankingRoutes from './routes/ranking';
 import complaintRoutes from './routes/complaints';
 import adminRoutes from './routes/admin';
+import partnerBatchRoutes from './routes/partnerBatches';
 import { authMiddleware } from './middleware/auth';
 import { env } from './config/env';
 import { messages } from './constants/messages';
@@ -51,6 +52,7 @@ app.use('/api/v1/volunteers', authMiddleware, volunteerRoutes);
 app.use('/api/v1/service-records', authMiddleware, serviceRecordRoutes);
 app.use('/api/v1/ranking', authMiddleware, rankingRoutes);
 app.use('/api/v1/complaints', authMiddleware, complaintRoutes);
+app.use('/api/v1/partner-batches', authMiddleware, partnerBatchRoutes);
 app.use('/api/v1/admin', authMiddleware, adminRoutes);
 
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {

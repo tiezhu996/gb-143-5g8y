@@ -57,6 +57,16 @@ export const batchServiceRecordsSchema = Joi.object({
   records: Joi.array().items(serviceRecordSchema).min(1).required(),
 });
 
+export const partnerBatchRecordSchema = serviceRecordSchema.keys({
+  external_record_no: Joi.string().min(1).max(100).required(),
+});
+
+export const partnerBatchSchema = Joi.object({
+  batch_no: Joi.string().min(1).max(100).required(),
+  partner_org: Joi.string().max(200).optional(),
+  records: Joi.array().items(partnerBatchRecordSchema).min(1).max(1000).required(),
+});
+
 export const volunteerCreateSchema = Joi.object({
   name: Joi.string().min(2).max(100).required(),
   phone: Joi.string().pattern(/^1[3-9]\d{9}$/).optional(),

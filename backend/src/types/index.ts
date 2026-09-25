@@ -187,6 +187,67 @@ export interface PaginatedData<T> {
   };
 }
 
+export interface PartnerBatchRecord extends ServiceRecord {
+  external_record_no: string;
+}
+
+export type PartnerBatchStatus = 'processing' | 'processed' | 'rejected' | 'conflicted';
+
+export interface PartnerBatch {
+  id: string;
+  batch_no: string;
+  partner_org?: string;
+  status: PartnerBatchStatus;
+  total_records: number;
+  new_count: number;
+  duplicate_count: number;
+  conflict_count: number;
+  message?: string;
+  conflict_details?: PartnerRecordConflict[];
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface PartnerServiceRecord {
+  id: string;
+  batch_no: string;
+  external_record_no: string;
+  volunteer_id: string;
+  service_type: string;
+  duration_hours: number;
+  rating: number;
+  is_no_show: boolean;
+  content_hash: string;
+  service_record_id?: string;
+  created_at: Date;
+}
+
+export interface PartnerRecordSnapshot {
+  volunteer_id: string;
+  service_type: string;
+  duration_hours: number;
+  rating: number;
+  is_no_show: boolean;
+}
+
+export interface PartnerRecordConflict {
+  external_record_no: string;
+  reason: string;
+  existing?: PartnerRecordSnapshot;
+  incoming?: PartnerRecordSnapshot;
+  diff_fields?: string[];
+}
+
+export type PartnerRecordResultStatus = 'new' | 'duplicate' | 'conflict' | 'invalid';
+
+export interface PartnerRecordResult {
+  external_record_no: string;
+  status: PartnerRecordResultStatus;
+  service_record_id?: string;
+  points_change?: number;
+  error?: string;
+}
+
 export interface RankingEntry {
   volunteer_id: string;
   volunteer_name: string;

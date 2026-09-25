@@ -119,6 +119,46 @@ const createTables = async (): Promise<void> => {
     `);
 
     await client.query(`
+      CREATE TABLE IF NOT EXISTS partner_batches (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        batch_no VARCHAR(100) NOT NULL UNIQUE,
+        partner_org VARCHAR(200),
+        status VARCHAR(20) NOT NULL DEFAULT 'processing' CHECK (status IN ('processing', 'processed', 'rejected', 'conflicted')),
+        total_records INTEGER NOT NULL DEFAULT 0,
+        new_count INTEGER NOT NULL DEFAULT 0,
+        duplicate_count INTEGER NOT NULL DEFAULT 0,
+        conflict_count INTEGER NOT NULL DEFAULT 0,
+        message TEXT,
+        conflict_details JSONB,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_partner_batches_status ON partner_batches(status);
+      CREATE INDEX IF NOT EXISTS idx_partner_batches_created_at ON partner_batches(created_at DESC);
+    `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS partner_service_records (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        batch_no VARCHAR(100) NOT NULL REFERENCES partner_batches(batch_no) ON DELETE CASCADE,
+        external_record_no VARCHAR(100) NOT NULL,
+        volunteer_id UUID NOT NULL REFERENCES volunteers(id) ON DELETE CASCADE,
+        service_type VARCHAR(50) NOT NULL,
+        duration_hours DECIMAL(6,2) NOT NULL,
+        rating INTEGER NOT NULL,
+        is_no_show BOOLEAN NOT NULL DEFAULT false,
+        content_hash VARCHAR(64) NOT NULL,
+        service_record_id UUID REFERENCES service_records(id) ON DELETE SET NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(batch_no, external_record_no)
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_partner_service_records_batch_no ON partner_service_records(batch_no);
+      CREATE INDEX IF NOT EXISTS idx_partner_service_records_volunteer_id ON partner_service_records(volunteer_id);
+    `);
+
+    await client.query(`
       CREATE TABLE IF NOT EXISTS admin_audit_logs (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         admin_id VARCHAR(100) NOT NULL,
@@ -151,6 +191,11 @@ const createTables = async (): Promise<void> => {
       DROP TRIGGER IF EXISTS update_service_records_updated_at ON service_records;
       CREATE TRIGGER update_service_records_updated_at
         BEFORE UPDATE ON service_records
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+      DROP TRIGGER IF EXISTS update_partner_batches_updated_at ON partner_batches;
+      CREATE TRIGGER update_partner_batches_updated_at
+        BEFORE UPDATE ON partner_batches
         FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
     `);
 

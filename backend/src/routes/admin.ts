@@ -6,6 +6,7 @@ import {
   getAdminAuditLogs,
   setVolunteerStatus,
 } from '../services/adminService';
+import { getPartnerBatchByNo, getPartnerBatches } from '../services/partnerBatchService';
 import { AuthRequest, requireAdmin } from '../middleware/auth';
 import { messages } from '../constants/messages';
 import { sendBadRequest, sendInternalError } from '../utils/httpResponses';
@@ -56,6 +57,27 @@ router.get('/audit-logs', validateQuery(paginationSchema), async (req: AuthReque
     res.status(200).json(result);
   } catch (error) {
     sendInternalError(res, error, 'Error getting audit logs');
+  }
+});
+
+router.get('/partner-batches', validateQuery(paginationSchema), async (req: AuthRequest, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const pageSize = parseInt(req.query.page_size as string) || 20;
+    const result = await getPartnerBatches(page, pageSize);
+    res.status(200).json(result);
+  } catch (error) {
+    sendInternalError(res, error, 'Error getting partner batches');
+  }
+});
+
+router.get('/partner-batches/:batchNo', async (req: AuthRequest, res: Response) => {
+  try {
+    const result = await getPartnerBatchByNo(req.params.batchNo);
+    const statusCode = result.success ? 200 : 404;
+    res.status(statusCode).json(result);
+  } catch (error) {
+    sendInternalError(res, error, 'Error getting partner batch');
   }
 });
 

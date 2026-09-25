@@ -11,7 +11,8 @@
     "lint": "eslint src --ext .ts",
     "typecheck": "tsc --noEmit",
     "test:credit-limit": "ts-node src/tests/creditLimit.test.ts",
-    "test:credit-calc": "ts-node src/tests/creditCalculation.test.ts"
+    "test:credit-calc": "ts-node src/tests/creditCalculation.test.ts",
+    "test:partner-batch": "ts-node src/tests/partnerBatch.test.ts"
   },
   "dependencies": {
     "express": "^4.18.2",
